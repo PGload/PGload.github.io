@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixel HP Bar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+    }
+    .wrapper {
+      text-align: center;
+    }
+    .pixels {
+      display: flex;
+      gap: 2px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .pixel {
+      width: 30px;
+      height: 18px;
+      background: #ddd;
+      border: 1px solid #333;
+    }
+    .pixel.alive {
+      background: #FF4D4F;
+    }
+    .percent {
+      font-weight: bold;
+      margin-bottom: 2px;
+      font-size: 16px;
+    }
+    .state {
+      font-size: 12px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="pixels" id="pixels"></div>
+  <div id="percent" class="percent">100%</div>
+  <div id="state" class="state">状态：元气满满～迎接高效的一天！</div>
+</div>
+
+<script>
+  const pixelContainer = document.getElementById('pixels');
+  const percentDom = document.getElementById('percent');
+  const stateDom = document.getElementById('state');
+
+  for (let i = 0; i < 10; i++) {
+    const div = document.createElement('div');
+    div.classList.add('pixel');
+    pixelContainer.appendChild(div);
+  }
+  const pixels = document.querySelectorAll('.pixel');
+
+  function updateHP() {
+    const now = new Date();
+    const start = new Date(now);
+    start.setHours(7, 0, 0, 0);
+    if (now < start) start.setDate(start.getDate() - 1);
+    const diffHours = (now - start) / 1000 / 3600;
+    let percent = Math.max(0, 100 - diffHours * 6.6);
+    percent = Math.min(100, percent);
+
+    const aliveCount = Math.round(percent / 10);
+    pixels.forEach((p, idx) => {
+      if (idx < aliveCount) {
+        p.classList.add('alive');
+      } else {
+        p.classList.remove('alive');
+      }
+    });
+
+    percentDom.innerText = Math.round(percent) + '%';
+
+    if (percent > 80) {
+      stateDom.innerText = '状态：元气满满～迎接高效的一天！';
+    } else if (percent > 20) {
+      stateDom.innerText = '状态：您已经进入沉浸区，加油哦！';
+    } else {
+      stateDom.innerText = '状态：能量即将用尽，请及时休息～';
+    }
+  }
+
+  updateHP();
+  setInterval(updateHP, 60000);
+</script>
+</body>
+</html>
